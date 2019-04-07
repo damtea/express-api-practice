@@ -12,7 +12,7 @@ const storage = multer.diskStorage({
 
 const fileFilter = (req, file, cb) => {
   //reject a file
-  if (file.mimetype === "iamge/jpeg" || file.mimetype === "image/png") {
+  if (file.mimetype === "image/jpeg" || file.mimetype === "image/png") {
     cb(null, true);
   } else {
     cb(null, false);
@@ -57,8 +57,8 @@ router.get("/", async (req, res, next) => {
 
 router.post("/", upload.single("productImage"), async (req, res) => {
   await pool.query(
-    "INSERT INTO products(name, price) VALUES ($1, $2)",
-    [req.body.name, req.body.price],
+    "INSERT INTO products(name, price, image) VALUES ($1, $2, $3)",
+    [req.body.name, req.body.price, req.file.path],
     (err, result) => {
       if (err) {
         res.status(502).json({

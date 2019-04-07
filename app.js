@@ -5,6 +5,7 @@ const bodyparser = require("body-parser");
 
 const productRoutes = require("./api/routes/products");
 const orderRoutes = require("./api/routes/orders");
+const userRoutes = require("./api/routes/user");
 //logging activities
 app.use(morgan("dev"));
 //Parsing the body
@@ -25,9 +26,10 @@ app.use((req, res, next) => {
   next();
 });
 //routes
-
+app.use("/uploads", express.static("uploads"));
 app.use("/products", productRoutes);
 app.use("/orders", orderRoutes);
+app.use("/user", userRoutes);
 //error handle
 app.use((req, res, next) => {
   const error = new Error("Not found");
