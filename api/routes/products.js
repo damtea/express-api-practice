@@ -1,6 +1,6 @@
 const express = require("express");
 const multer = require("multer");
-
+const checkAuth = require("../middleware/check-auth");
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, "./uploads/");
@@ -33,7 +33,7 @@ const pool = new Pool({
   connectionString: conn
 });
 pool.connect();
-router.get("/", async (req, res, next) => {
+router.get("/", checkAuth, async (req, res, next) => {
   await pool.query("SELECT * FROM products", (err, result) => {
     if (err) {
       res.status(502).json({
@@ -55,7 +55,7 @@ router.get("/", async (req, res, next) => {
   });
 });
 
-router.post("/", upload.single("productImage"), async (req, res) => {
+router.post("/", checkAuth, upload.single("productImage"), async (req, res) => {
   await pool.query(
     "INSERT INTO products(name, price, image) VALUES ($1, $2, $3)",
     [req.body.name, req.body.price, req.file.path],

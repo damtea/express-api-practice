@@ -1,0 +1,6 @@
+{
+  "env": {
+    "POSTGRESS_PW": "dama15",
+    "JWT_PW": "15dama"
+  }
+}

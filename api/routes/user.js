@@ -3,12 +3,13 @@ const router = express.Router();
 const uniqid = require("uniqid");
 const bcrypt = require("bcrypt");
 const { Pool } = require("pg");
+const jwt = require("jsonwebtoken");
 const conn = require("../../connection");
 const pool = new Pool({
   connectionString: conn
 });
 pool.connect();
-router.get("/signup", async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   await pool.query("SELECT * FROM users", (err, result) => {
     if (err) {
       res.status(502).json({
@@ -80,15 +81,26 @@ router.post("/login", async (req, res, next) => {
           });
         } else if (result.rowCount > 0) {
           const password = result.rows[0].password;
-          bcrypt.compare(req.body.password, password, (err, result) => {
+          bcrypt.compare(req.body.password, password, (err, results) => {
             if (err) {
               return res.status(401).json({
                 message: "Authentication Failed"
               });
             }
-            if (result) {
+            if (results) {
+              const token = jwt.sign(
+                {
+                  email: req.body.email,
+                  userid: result.rows[0].userid
+                },
+                process.env.JWT_PW,
+                {
+                  expiresIn: "1h"
+                }
+              );
               return res.status(200).json({
-                message: "Authentication successful"
+                message: "Authentication successful",
+                token: token
               });
             }
             res.status(401).json({

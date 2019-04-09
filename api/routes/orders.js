@@ -44,6 +44,7 @@ router.get("/", async (req, res, next) => {
 });
 
 router.post("/", async (req, res, next) => {
+  console.log(process.env.POSTGRESS_PW);
   await pool.query(
     'INSERT INTO orders ("productId") VALUES ($1)',
     [req.body.productId],
