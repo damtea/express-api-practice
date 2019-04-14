@@ -33,7 +33,7 @@ const pool = new Pool({
   connectionString: conn
 });
 pool.connect();
-router.get("/", checkAuth, async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   await pool.query("SELECT * FROM products", (err, result) => {
     if (err) {
       res.status(502).json({

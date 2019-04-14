@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 const { Pool } = require("pg");
 const jwt = require("jsonwebtoken");
 const conn = require("../../connection");
+const checkAuth = require("../middleware/check-auth");
 const pool = new Pool({
   connectionString: conn
 });
@@ -76,15 +77,15 @@ router.post("/login", async (req, res, next) => {
             error: err
           });
         } else if (result.rowCount === 0) {
-          res.status(404).json({
-            message: "Authentication Failed"
+          res.json({
+            message: "Authentication failed"
           });
         } else if (result.rowCount > 0) {
           const password = result.rows[0].password;
           bcrypt.compare(req.body.password, password, (err, results) => {
             if (err) {
-              return res.status(401).json({
-                message: "Authentication Failed"
+              return res.json({
+                message: "Authentication failed"
               });
             }
             if (results) {
@@ -100,11 +101,12 @@ router.post("/login", async (req, res, next) => {
               );
               return res.status(200).json({
                 message: "Authentication successful",
+                email: req.body.email,
                 token: token
               });
             }
-            res.status(401).json({
-              message: "Authentication Failed"
+            res.json({
+              message: "Authentication failed"
             });
           });
         } else {
@@ -115,6 +117,12 @@ router.post("/login", async (req, res, next) => {
       }
     );
   }
+});
+
+router.post("/logout", checkAuth, (req, res, next) => {
+  res.json({
+    message: req.headers
+  });
 });
 
 module.exports = router;

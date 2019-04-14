@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const morgan = require("morgan");
 const bodyparser = require("body-parser");
-
+const checkAuth = require("./api/middleware/check-auth");
 const productRoutes = require("./api/routes/products");
 const orderRoutes = require("./api/routes/orders");
 const userRoutes = require("./api/routes/user");
@@ -26,6 +26,7 @@ app.use((req, res, next) => {
   next();
 });
 //routes
+app.use("/checkAuth", checkAuth);
 app.use("/uploads", express.static("uploads"));
 app.use("/products", productRoutes);
 app.use("/orders", orderRoutes);
